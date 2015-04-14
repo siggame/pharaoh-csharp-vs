@@ -1,6 +1,8 @@
 ## pharaoh-csharp-vs
 
-To get started, clone the repository and double-click the `Pharaoh.sln` file to open the solution in Visual Studio.
+To get started, clone the repository and open the `Pharaoh.sln` file with Visual Studio (VS) 2013.
+By default, this solution is set up for VS 2013 to enable utilization of the latest technology available.
 
-By default, this solution is set up for Visual Studio 2012/2013 in order to enable utilization of .NET 4.5.
-**Visual Studio 2010 is not supported.**
+Older versions of VS are not officially supported by the team.
+If for some reason you want to use VS 2010 or 2012, you may do so by changing the `Platform Toolset` setting in the `Library` project to the appropriate version.  
+**Do so at your own risk.**
