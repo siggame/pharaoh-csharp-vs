@@ -1335,10 +1335,16 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef __cplusplus
-extern int isatty (int );
-#endif /* __cplusplus */
-    
+#ifdef _WIN32
+	extern "C"
+	{
+		extern int isatty(int);
+	}
+#else
+	#ifndef __cplusplus
+	extern int isatty (int );
+	#endif /* __cplusplus */
+#endif
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a yyrestart() or at EOF.
@@ -1362,7 +1368,11 @@ extern int isatty (int );
         b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+#ifdef _WIN32
+	b->yy_is_interactive = file ? (isatty(_fileno(file)) > 0) : 0;
+#else
+	b->yy_is_interactive = file ? (isatty(fileno(file)) > 0) : 0;
+#endif
     
 	errno = oerrno;
 }
