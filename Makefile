@@ -1,4 +1,4 @@
-CSFILES=$(shell ls *.cs 2> /dev/null)
+CSFILES=$(shell ls Pharaoh/*.cs 2> /dev/null)
 
 all: libclient.so client.exe
 
@@ -6,9 +6,9 @@ submit: Main.class
 	@echo "$(shell cd ..;sh submit.sh c)"
 
 
-libclient.so: library/*.cpp library/*.h
-	$(MAKE) -C library/ libclient.so
-	cp -f library/libclient.so libclient.so
+libclient.so: Library/*.cpp Library/*.h
+	$(MAKE) -C Library/ libclient.so
+	cp -f Library/libclient.so libclient.so
 
 client.exe: $(CSFILES) libclient.so
 	gmcs -out:client.exe  $(CSFILES)
@@ -16,4 +16,4 @@ client.exe: $(CSFILES) libclient.so
 clean:
 	rm -f client.exe
 	rm -f libclient.so
-	make -C library clean
+	make -C Library clean
