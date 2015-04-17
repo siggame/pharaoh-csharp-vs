@@ -10,6 +10,19 @@ public class TrapType
   protected int ID;
   protected int iteration;
 
+  public static const int SARCOPHAGUS = 0;
+  public static const int SPIKE_PIT = 1;
+  public static const int SWINGING_BLADE = 2;
+  public static const int BOULDER = 3;
+  public static const int SPIDER_WEB = 4;
+  public static const int QUICKSAND = 5;
+  public static const int OIL_VASES = 6;
+  public static const int ARROW_WALL = 7;
+  public static const int HEAD_WIRE = 8;
+  public static const int MERCURY_PIT = 9;
+  public static const int MUMMY = 10;
+  public static const int FAKE_ROTATING_WALL = 11;
+
   public TrapType()
   {
   }
