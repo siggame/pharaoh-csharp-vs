@@ -21,11 +21,11 @@ public class Thief : Mappable
     public override bool validify()
     {
         if (iteration == BaseAI.iteration) return true;
-        for (int i = 0; i < BaseAI.thiefs.Length; i++)
+        for (int i = 0; i < BaseAI.thieves.Length; i++)
         {
-            if (BaseAI.thiefs[i].ID == ID)
+            if (BaseAI.thieves[i].ID == ID)
             {
-                ptr = BaseAI.thiefs[i].ptr;
+                ptr = BaseAI.thieves[i].ptr;
                 iteration = BaseAI.iteration;
                 return true;
             }

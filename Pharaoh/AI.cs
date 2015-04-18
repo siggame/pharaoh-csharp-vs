@@ -327,7 +327,7 @@ class AI : BaseAI
         {
             return null;
         }
-        foreach( var thief in thiefs )
+        foreach( var thief in thieves )
         {
             if( thief.X == x && thief.Y == y)
             {
@@ -410,7 +410,7 @@ class AI : BaseAI
     List<Thief> getMyThieves()
     {
         List<Thief> toReturn = new List<Thief>();
-        foreach( var thief in thiefs )
+        foreach( var thief in thieves )
         {
             if( thief.Owner == playerID() )
             {
@@ -424,7 +424,7 @@ class AI : BaseAI
     List<Thief> getEnemyThieves()
     {
         List<Thief> toReturn = new List<Thief>();
-        foreach( var thief in thiefs )
+        foreach( var thief in thieves )
         {
             if( thief.Owner != playerID() )
             {
