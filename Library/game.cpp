@@ -508,7 +508,7 @@ DLLEXPORT int trapAct(_Trap* object, int x, int y)
 
     int deathX = object->x;
     int deathY = object->y;
-	_Tile* tile = nullptr;
+    _Tile* tile = nullptr;
 
     do
     {
@@ -840,7 +840,7 @@ DLLEXPORT int thiefUseSpecial(_Thief* object, int x, int y)
     object->y = newy;
     
     // Check for oil vase
-	_Trap* vase = nullptr;
+    _Trap* vase = nullptr;
     bool isVase = false;
     for(int i = 0; i < c->TrapCount; ++i)
     {
