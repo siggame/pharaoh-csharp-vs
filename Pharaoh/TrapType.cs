@@ -10,6 +10,19 @@ public class TrapType
   protected int ID;
   protected int iteration;
 
+  public const int SARCOPHAGUS = 0;
+  public const int SPIKE_PIT = 1;
+  public const int SWINGING_BLADE = 2;
+  public const int BOULDER = 3;
+  public const int SPIDER_WEB = 4;
+  public const int QUICKSAND = 5;
+  public const int OIL_VASES = 6;
+  public const int ARROW_WALL = 7;
+  public const int HEAD_WIRE = 8;
+  public const int MERCURY_PIT = 9;
+  public const int MUMMY = 10;
+  public const int FAKE_ROTATING_WALL = 11;
+
   public TrapType()
   {
   }
@@ -279,3 +292,4 @@ public class TrapType
   #region Properties
   #endregion
 }
+

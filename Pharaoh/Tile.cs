@@ -7,6 +7,10 @@ using System.Runtime.InteropServices;
 public class Tile: Mappable
 {
 
+  public const int EMPTY = 0;
+  public const int SPAWN = 1;
+  public const int WALL = 2;
+
   public Tile()
   {
   }
