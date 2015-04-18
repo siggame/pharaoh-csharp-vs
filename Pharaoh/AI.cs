@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 
@@ -44,7 +45,9 @@ class AI : BaseAI
                 }
             }
 
+            int myScarabs = me.Scarabs;
             int sarcophagusCount = mySarcophagi.Count;
+            List<Tile> mySarcophagiTiles = new List<Tile>();
             // Find the first open tiles and place the sarcophagi there
             for (int i = 0; i < tiles.Length; i++)
             {
@@ -54,6 +57,7 @@ class AI : BaseAI
                 {
                     // Move my sarcophagus to that location
                     me.placeTrap(tile.X, tile.Y, TrapType.SARCOPHAGUS);
+                    mySarcophagiTiles.Add(tile);
                     sarcophagusCount--;
                     if (sarcophagusCount == 0)
                     {
@@ -61,14 +65,15 @@ class AI : BaseAI
                     }
                 }
             }
+
             // Make sure there aren't too many traps spawned
-            List<int> trapCount = new List<int>(trapTypes.Length);
-            //continue spawning traps until there isn't enough money to spend
+            int[] trapCount = Enumerable.Repeat(0, trapTypes.Length).ToArray();
+            // Continue spawning traps until there isn't enough money to spend
             for (int i = 0; i < tiles.Length; i++)
             {
-                // If the tile is on my side
+                // If the tile is on my side and I haven't placed a sarcophagus on it
                 Tile tile = tiles[i];
-                if (onMySide(tile.X))
+                if (onMySide(tile.X) && ! mySarcophagiTiles.Contains(tile))
                 {
                     // Make sure there isn't a trap on that tile
                     if (getTrap(tile.X, tile.Y) != null)
@@ -78,23 +83,25 @@ class AI : BaseAI
                     // Select a random trap type (make sure it isn't a sarcophagus)
                     int trapType = rand.Next(trapTypes.Length - 1) + 1;
                     // Make sure another can be spawned
-                    if (trapCount[trapType] < trapTypes[trapType].MaxInstances)
+                    if (trapCount[trapType] >= trapTypes[trapType].MaxInstances)
                     {
                         continue;
                     }
                     // If there are enough scarabs
-                    if (me.Scarabs >= trapTypes[trapType].Cost)
+                    if (myScarabs >= trapTypes[trapType].Cost)
                     {
                         // Check if the tile is the right type (wall or empty)
                         if (trapTypes[trapType].CanPlaceOnWalls == 1 && tile.Type == Tile.WALL)
                         {
                             me.placeTrap(tile.X, tile.Y, trapType);
                             trapCount[trapType]++;
+                            myScarabs -= trapTypes[trapType].Cost;
                         }
                         else if (trapTypes[trapType].CanPlaceOnWalls == 0 && tile.Type == Tile.EMPTY)
                         {
                             me.placeTrap(tile.X, tile.Y, trapType);
                             trapCount[trapType]++;
+                            myScarabs -= trapTypes[trapType].Cost;
                         }
                     }
                     else
@@ -252,7 +259,7 @@ class AI : BaseAI
                             // Roll over the thief
                             if (enemyThief != null)
                             {
-                                trap.act(xChange[i], yChange[i]);
+                                trap.act(enemyThief.X, enemyThief.Y);
                                 break;
                             }
                         }
