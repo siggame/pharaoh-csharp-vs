@@ -43,11 +43,7 @@ DLLEXPORT int open_server_connection(const char* host, const char* port)
         return -1;
     }
 
-#ifdef WIN32
-	char* address = _strdup(host);
-#else
-	char* address = strdup(host);
-#endif
+    char* address = _strdup(host);
 
     if(strchr(address, ':'))
     {

@@ -10,6 +10,12 @@ public class ThiefType
   protected int ID;
   protected int iteration;
 
+  public const int BOMBER = 0;
+  public const int DIGGER = 1;
+  public const int NINJA = 2;
+  public const int GUIDE = 3;
+  public const int SLAVE = 4;
+
   public ThiefType()
   {
   }

@@ -6,131 +6,144 @@ using System.Runtime.InteropServices;
 /// </summary>
 public class Player
 {
-  public IntPtr ptr;
-  protected int ID;
-  protected int iteration;
+    public IntPtr ptr;
+    protected int ID;
+    protected int iteration;
 
-  public Player()
-  {
-  }
-
-  public Player(IntPtr p)
-  {
-    ptr = p;
-    ID = Client.playerGetId(ptr);
-    iteration = BaseAI.iteration;
-  }
-
-  public bool validify()
-  {
-    if(iteration == BaseAI.iteration) return true;
-    for(int i = 0; i < BaseAI.players.Length; i++)
+    public Player()
     {
-      if(BaseAI.players[i].ID == ID)
-      {
-        ptr = BaseAI.players[i].ptr;
+    }
+
+    public Player(IntPtr p)
+    {
+        ptr = p;
+        ID = Client.playerGetId(ptr);
         iteration = BaseAI.iteration;
-        return true;
-      }
     }
-    throw new ExistentialError();
-  }
 
-  #region Commands
-  /// <summary>
-  /// Place the specified trap type at the given location.
-  /// </summary>
-  public bool placeTrap(int x, int y, int trapType)
-  {
-    validify();
-    return (Client.playerPlaceTrap(ptr, x, y, trapType) == 0) ? false : true;
-  }
-  /// <summary>
-  /// Place the specified thief type at the given location.
-  /// </summary>
-  public bool purchaseThief(int x, int y, int thiefType)
-  {
-    validify();
-    return (Client.playerPurchaseThief(ptr, x, y, thiefType) == 0) ? false : true;
-  }
-  /// <summary>
-  /// Display a message on the screen.
-  /// </summary>
-  public bool pharaohTalk(string message)
-  {
-    validify();
-    return (Client.playerPharaohTalk(ptr, message) == 0) ? false : true;
-  }
-  #endregion
-
-  #region Getters
-  /// <summary>
-  /// Unique Identifier
-  /// </summary>
-  public int Id
-  {
-    get
+    public bool validify()
     {
-      validify();
-      int value = Client.playerGetId(ptr);
-      return value;
+        if (iteration == BaseAI.iteration) return true;
+        for (int i = 0; i < BaseAI.players.Length; i++)
+        {
+            if (BaseAI.players[i].ID == ID)
+            {
+                ptr = BaseAI.players[i].ptr;
+                iteration = BaseAI.iteration;
+                return true;
+            }
+        }
+        throw new ExistentialError();
     }
-  }
 
-  /// <summary>
-  /// Player's Name
-  /// </summary>
-  public string PlayerName
-  {
-    get
+    #region Commands
+    /// <summary>
+    /// Place the specified trap type at the given location.
+    /// </summary>
+    public bool placeTrap(int x, int y, int trapType)
     {
-      validify();
-      IntPtr value = Client.playerGetPlayerName(ptr);
-      return Marshal.PtrToStringAuto(value);
+        validify();
+        return (Client.playerPlaceTrap(ptr, x, y, trapType) == 0) ? false : true;
     }
-  }
-
-  /// <summary>
-  /// Time remaining, updated at start of turn
-  /// </summary>
-  public float Time
-  {
-    get
+    /// <summary>
+    /// Place the specified thief type at the given location.
+    /// </summary>
+    public bool purchaseThief(int x, int y, int thiefType)
     {
-      validify();
-      float value = Client.playerGetTime(ptr);
-      return value;
+        validify();
+        return (Client.playerPurchaseThief(ptr, x, y, thiefType) == 0) ? false : true;
     }
-  }
-
-  /// <summary>
-  /// The number of scarabs this player has to purchase traps or thieves.
-  /// </summary>
-  public int Scarabs
-  {
-    get
+    /// <summary>
+    /// Display a message on the screen.
+    /// </summary>
+    public bool pharaohTalk(string message)
     {
-      validify();
-      int value = Client.playerGetScarabs(ptr);
-      return value;
+        validify();
+        return (Client.playerPharaohTalk(ptr, message) == 0) ? false : true;
     }
-  }
+    #endregion
 
-  /// <summary>
-  /// The number of rounds won by this player.
-  /// </summary>
-  public int RoundsWon
-  {
-    get
+    #region Getters
+    /// <summary>
+    /// Unique Identifier
+    /// </summary>
+    public int Id
     {
-      validify();
-      int value = Client.playerGetRoundsWon(ptr);
-      return value;
+        get
+        {
+            validify();
+            int value = Client.playerGetId(ptr);
+            return value;
+        }
     }
-  }
 
-  #endregion
+    /// <summary>
+    /// Player's Name
+    /// </summary>
+    public string PlayerName
+    {
+        get
+        {
+            validify();
+            IntPtr value = Client.playerGetPlayerName(ptr);
+            return Marshal.PtrToStringAuto(value);
+        }
+    }
 
-  #region Properties
-  #endregion
+    /// <summary>
+    /// Time remaining, updated at start of turn
+    /// </summary>
+    public float Time
+    {
+        get
+        {
+            validify();
+            float value = Client.playerGetTime(ptr);
+            return value;
+        }
+    }
+
+    /// <summary>
+    /// The number of scarabs this player has to purchase traps or thieves.
+    /// </summary>
+    public int Scarabs
+    {
+        get
+        {
+            validify();
+            int value = Client.playerGetScarabs(ptr);
+            return value;
+        }
+    }
+
+    /// <summary>
+    /// The number of rounds won by this player.
+    /// </summary>
+    public int RoundsWon
+    {
+        get
+        {
+            validify();
+            int value = Client.playerGetRoundsWon(ptr);
+            return value;
+        }
+    }
+
+    /// <summary>
+    /// The number of sarcophagi captured by this player this round.
+    /// </summary>
+    public int SarcophagiCaptured
+    {
+        get
+        {
+            validify();
+            int value = Client.playerGetSarcophagiCaptured(ptr);
+            return value;
+        }
+    }
+
+    #endregion
+
+    #region Properties
+    #endregion
 }

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 class AI : BaseAI
 {
     Player me;
+    Random rand;
     
     public override string username()
     {
@@ -30,13 +31,14 @@ class AI : BaseAI
         List<Trap> mySarcophagi = new List<Trap>();
         List<Trap> enemySarcophagi = new List<Trap>();
 
+#region FirstTurn
         // If it's the first turn, place traps
-        if( roundTurnNumber() <= 1 )
+        if (roundTurnNumber() <= 1)
         {
             // Find my sarcophagi
-            foreach( var trap in traps )
+            foreach (var trap in traps)
             {
-                if( trap.Owner == playerID() && trap.TrapType == TrapType.SARCOPHAGUS)
+                if (trap.Owner == playerID() && trap.TrapType == TrapType.SARCOPHAGUS)
                 {
                     mySarcophagi.Add(trap);
                 }
@@ -44,234 +46,234 @@ class AI : BaseAI
 
             int sarcophagusCount = mySarcophagi.Count;
             // Find the first open tiles and place the sarcophagi there
-            for( int i = 0; i < tiles.Length; i++ )
+            for (int i = 0; i < tiles.Length; i++)
             {
                 Tile tile = tiles[i];
                 // If the tile is on my side and is empty
-                if( onMySide(tile.X) && tile.Type == Tile.EMPTY )
+                if (onMySide(tile.X) && tile.Type == Tile.EMPTY)
                 {
-                    //move my sarcophagus to that location
+                    // Move my sarcophagus to that location
                     me.placeTrap(tile.X, tile.Y, TrapType.SARCOPHAGUS);
-                    --sarcophagusCount;
-                    if(sarcophagusCount == 0)
+                    sarcophagusCount--;
+                    if (sarcophagusCount == 0)
                     {
                         break;
                     }
                 }
             }
-            //make sure there aren't too many traps spawned
-            std::vector<unsigned> trapCount(trapTypes.size());
+            // Make sure there aren't too many traps spawned
+            List<int> trapCount = new List<int>(trapTypes.Length);
             //continue spawning traps until there isn't enough money to spend
-            for(unsigned i = 0; i < tiles.size(); ++i)
+            for (int i = 0; i < tiles.Length; i++)
             {
-                //if the tile is on my side
-                Tile& tile = tiles[i];
-                if(onMySide(tile.x()))
+                // If the tile is on my side
+                Tile tile = tiles[i];
+                if (onMySide(tile.X))
                 {
-                //make sure there isn't a trap on that tile
-                if(getTrap(tile.x(), tile.y()) != NULL)
-                {
-                    continue;
-                }
-                //select a random trap type (make sure it isn't a sarcophagus)
-                int trapType = (rand() % (trapTypes.size() - 1)) + 1;
-                //make sure another can be spawned
-                if(trapCount[trapType] < trapTypes[trapType].maxInstances())
-                {
-                    continue;
-                }
-                //if there are enough scarabs
-                if(me->scarabs() >= trapTypes[trapType].cost())
-                {
-                    //check if the tile is the right type (wall or empty)
-                    if(trapTypes[trapType].canPlaceOnWalls() && tile.type() == Tile::WALL)
+                    // Make sure there isn't a trap on that tile
+                    if (getTrap(tile.X, tile.Y) != null)
                     {
-                    me->placeTrap(tile.x(), tile.y(), trapType);
-                    ++trapCount[trapType];
+                        continue;
                     }
-                    else if(!trapTypes[trapType].canPlaceOnWalls() && tile.type() == Tile::EMPTY)
+                    // Select a random trap type (make sure it isn't a sarcophagus)
+                    int trapType = rand.Next(trapTypes.Length - 1) + 1;
+                    // Make sure another can be spawned
+                    if (trapCount[trapType] < trapTypes[trapType].MaxInstances)
                     {
-                    me->placeTrap(tile.x(), tile.y(), trapType);
-                    ++trapCount[trapType];
+                        continue;
+                    }
+                    // If there are enough scarabs
+                    if (me.Scarabs >= trapTypes[trapType].Cost)
+                    {
+                        // Check if the tile is the right type (wall or empty)
+                        if (trapTypes[trapType].CanPlaceOnWalls == 1 && tile.Type == Tile.WALL)
+                        {
+                            me.placeTrap(tile.X, tile.Y, trapType);
+                            trapCount[trapType]++;
+                        }
+                        else if (trapTypes[trapType].CanPlaceOnWalls == 0 && tile.Type == Tile.EMPTY)
+                        {
+                            me.placeTrap(tile.X, tile.Y, trapType);
+                            trapCount[trapType]++;
+                        }
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
-                else
+            }
+        }
+#endregion
+        // Otherwise it's time to move and purchase thieves and activate traps
+        else
+        {
+            // Find my sarcophagi and the enemy sarcophagi
+            foreach (var trap in traps)
+            {
+                if (trap.TrapType == TrapType.SARCOPHAGUS)
                 {
-                    break;
-                }
+                    if (trap.Owner != playerID())
+                    {
+                        enemySarcophagi.Add(trap);
+                    }
+                    else
+                    {
+                        mySarcophagi.Add(trap);
+                    }
                 }
             }
-            }
-            //otherwise it's time to move and purchase thieves and activate traps
-            else
+            // Find my spawn tiles
+            List<Tile> spawnTiles = getMySpawns();
+            // Find my thieves
+            List<Thief> myThieves = getMyThieves();
+            // Select a random thief type
+            int thiefNo = rand.Next(thiefTypes.Length);
+            // If you can afford the thief
+            if (me.Scarabs >= thiefTypes[thiefNo].Cost)
             {
-            //find my sarcophagi and the enemy sarcophagi
-            for(unsigned i = 0; i < traps.size(); ++i)
-            {
-                Trap& trap = traps[i];
-                if(trap.trapType() == TrapType::SARCOPHAGUS)
-                {
-                if(trap.owner() != playerID())
-                {
-                    enemySarcophagi.push_back(&trap);
-                }
-                else
-                {
-                    mySarcophagi.push_back(&trap);
-                }
-                }
-            }
-            //find my spawn tiles
-            std::vector<Tile*> spawnTiles = getMySpawns();
-            //select a random thief type
-            int thiefNo = rand() % thiefTypes.size();
-            //if you can afford the thief
-            if(me->scarabs() >= thiefTypes[thiefNo].cost())
-            {
-                //make sure another can be spawned
-                int max = thiefTypes[thiefNo].maxInstances();
+                // Make sure another can be spawned
+                int max = thiefTypes[thiefNo].MaxInstances;
                 int count = 0;
-                std::vector<Thief*> myThieves = getMyThieves();
-                for(unsigned i = 0; i < myThieves.size(); ++i)
+                foreach (var thief in myThieves)
                 {
-                if(myThieves[i]->thiefType() == thiefNo)
-                {
-                    ++count;
+                    if (thief.ThiefType == thiefNo)
+                    {
+                        count++;
+                    }
                 }
-                }
-                //only spawn if there aren't too many
-                if(count < max)
+                // Only spawn if there aren't too many
+                if (count < max)
                 {
-                //select a random spawn location
-                int spawnLoc = rand() % spawnTiles.size();
-                //spawn a thief there
-                Tile* spawnTile = spawnTiles[spawnLoc];
-                me->purchaseThief(spawnTile->x(), spawnTile->y(), thiefNo);
+                    // Select a random spawn location
+                    int spawnLoc = rand.Next(spawnTiles.Count);
+                    // Spawn a thief there
+                    Tile spawnTile = spawnTiles[spawnLoc];
+                    me.purchaseThief(spawnTile.X, spawnTile.Y, thiefNo);
                 }
             }
-            //move my thieves
-            std::vector<Thief*> myThieves = getMyThieves();
-            for(unsigned i = 0; i < myThieves.size(); ++i)
+            // Move my thieves
+            foreach (var thief in myThieves)
             {
-                Thief* thief = myThieves[i];
-                //if the thief is alive and not frozen
-                if(thief->alive() && thief->frozenTurnsLeft() == 0)
+                // If the thief is alive and not frozen
+                if (thief.Alive == 1 && thief.FrozenTurnsLeft == 0)
                 {
-                const int xChange[] = {-1, 1,  0, 0};
-                const int yChange[] = { 0, 0, -1, 1};
-                //try to dig or use a bomb before moving
-                if(thief->thiefType() == ThiefType::DIGGER && thief->specialsLeft() > 0)
-                {
-                    for(unsigned i = 0; i < 4; ++i)
+                    int[] xChange = new int[] { -1, 1, 0, 0 };
+                    int[] yChange = new int[] { 0, 0, -1, 1 };
+                    // Try to dig or use a bomb before moving
+                    if (thief.ThiefType == ThiefType.DIGGER && thief.SpecialsLeft > 0)
                     {
-                    //if there is a wall adjacent and an empty space on the other side
-                    int checkX = thief->x() + xChange[i];
-                    int checkY = thief->y() + yChange[i];
-                    Tile* wallTile = getTile(checkX, checkY);
-                    Tile* emptyTile = getTile(checkX + xChange[i], checkY + yChange[i]);
-                    //must be on the map, and not trying to dig to the other side
-                    if(wallTile != NULL && emptyTile != NULL && !onMySide(checkX + xChange[i]))
-                    {
-                        //if there is a wall with an empty tile on the other side
-                        if(wallTile->type() == Tile::WALL && emptyTile->type() == Tile::EMPTY)
+                        for (int i = 0; i < 4; i++)
                         {
-                        //dig through the wall
-                        thief->useSpecial(checkX, checkY);
-                        //break out of the loop
-                        break;
+                            // If there is a wall adjacent and an empty space on the other side
+                            int checkX = thief.X + xChange[i];
+                            int checkY = thief.Y + yChange[i];
+                            Tile wallTile = getTile(checkX, checkY);
+                            Tile emptyTile = getTile(checkX + xChange[i], checkY + yChange[i]);
+                            // Must be on the map, and not trying to dig to the other side
+                            if (wallTile != null && emptyTile != null && !onMySide(checkX + xChange[i]))
+                            {
+                                // If there is a wall with an empty tile on the other side
+                                if (wallTile.Type == Tile.WALL && emptyTile.Type == Tile.EMPTY)
+                                {
+                                    // Dig through the wall
+                                    thief.useSpecial(checkX, checkY);
+                                    //break out of the loop
+                                    break;
+                                }
+                            }
                         }
                     }
-                    }
-                }
-                else if(thief->thiefType() == ThiefType::BOMBER && thief->specialsLeft() > 0)
-                {
-                    for(unsigned i = 0; i < 4; ++i)
+                    else if (thief.ThiefType == ThiefType.BOMBER && thief.SpecialsLeft > 0)
                     {
-                    //the place to check for things to blow up
-                    int checkX = thief->x() + xChange[i];
-                    int checkY = thief->y() + yChange[i];
-                    //make sure that the spot isn't on the other side
-                    if(!onMySide(checkX))
-                    {
-                        //if there is a wall tile there, blow it up
-                        Tile* checkTile = getTile(checkX, checkY);
-                        if(checkTile != NULL && checkTile->type() == Tile::WALL)
+                        for (int i = 0; i < 4; i++)
                         {
-                        //blow up the wall
-                        thief->useSpecial(checkX, checkY);
-                        //break out of the loop
-                        break;
-                        }
-                        //otherwise check if there is a trap there
-                        Trap* checkTrap = getTrap(checkX, checkY);
-                        //don't want to blow up the sarcophagus!
-                        if(checkTrap != NULL && checkTrap->trapType() != TrapType::SARCOPHAGUS)
-                        {
-                        //blow up the trap
-                        thief->useSpecial(checkX, checkY);
-                        //break out of the loop
-                        break;
+                            // The place to check for things to blow up
+                            int checkX = thief.X + xChange[i];
+                            int checkY = thief.Y + yChange[i];
+                            // Make sure that the spot isn't on the other side
+                            if (!onMySide(checkX))
+                            {
+                                // If there is a wall tile there, blow it up
+                                Tile checkTile = getTile(checkX, checkY);
+                                if (checkTile != null && checkTile.Type == Tile.WALL)
+                                {
+                                    // Blow up the wall
+                                    thief.useSpecial(checkX, checkY);
+                                    // Break out of the loop
+                                    break;
+                                }
+                                // Otherwise check if there is a trap there
+                                Trap checkTrap = getTrap(checkX, checkY);
+                                // Don't want to blow up the sarcophagus!
+                                if (checkTrap != null && checkTrap.TrapType != TrapType.SARCOPHAGUS)
+                                {
+                                    // Blow up the trap
+                                    thief.useSpecial(checkX, checkY);
+                                    // Break out of the loop
+                                    break;
+                                }
+                            }
                         }
                     }
-                    }
-                }
-                //if the thief has any movement left
-                if(thief->movementLeft() > 0)
-                {
-                    //find a path from the thief's location to the enemy sarcophagus
-                    std::deque<Point> path;
-                    int endX = enemySarcophagi[0]->x();
-                    int endY = enemySarcophagi[0]->y();
-                    path = findPath(Point(thief->x(), thief->y()), Point(endX, endY));
-                    //if a path exists then move forward on the path
-                    if(path.size() > 0)
+                    // If the thief has any movement left
+                    if (thief.MovementLeft > 0)
                     {
-                    thief->move(path[0].x, path[0].y);
-                    }  
-                }
+                        // Find a path from the thief's location to the enemy sarcophagus
+                        Queue<Point> path = new Queue<Point>();
+                        int endX = enemySarcophagi[0].X;
+                        int endY = enemySarcophagi[0].Y;
+                        path = findPath(new Point(thief.X, thief.Y), new Point(endX, endY));
+                        // If a path exists then move forward on the path
+                        if (path.Count > 0)
+                        {
+                            Point nextMove = path.Dequeue();
+                            thief.move(nextMove.x, nextMove.y);
+                        }
+                    }
                 }
             }
-            //do things with traps now
-            std::vector<Trap*> myTraps = getMyTraps();
-            for(unsigned i = 0; i < myTraps.size(); ++i)
+            // Do things with traps now
+            List<Trap> myTraps = getMyTraps();
+            foreach (var trap in myTraps)
             {
-                const int xChange[] = {-1, 1,  0, 0};
-                const int yChange[] = { 0, 0, -1, 1};
-                Trap* trap = myTraps[i];
-                //make sure trap can be used
-                if(trap->active())
+                int[] xChange = new int[] { -1, 1, 0, 0 };
+                int[] yChange = new int[] { 0, 0, -1, 1 };
+                // Make sure trap can be used
+                if (trap.Active == 1)
                 {
-                //if trap is a boulder
-                if(trap->trapType() == TrapType::BOULDER)
-                {
-                    //if there is an enemy thief adjancent
-                    for(unsigned i = 0; i < 4; ++i)
+                    // If trap is a boulder
+                    if (trap.TrapType == TrapType.BOULDER)
                     {
-                    Thief* enemyThief = getThief(trap->x() + xChange[i], trap->y() + yChange[i]);
-                    //roll over the thief
-                    if(enemyThief != NULL)
-                    {
-                        trap->act(xChange[i], yChange[i]);
-                        break;
+                        // If there is an enemy thief adjancent
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Thief enemyThief = getThief(trap.X + xChange[i], trap.Y + yChange[i]);
+                            // Roll over the thief
+                            if (enemyThief != null)
+                            {
+                                trap.act(xChange[i], yChange[i]);
+                                break;
+                            }
+                        }
                     }
-                    }
-                }
-                else if(trap->trapType() == TrapType::MUMMY)
-                {
-                    //move around randomly if a mummy
-                    int dir = rand() % 4;
-                    int checkX = trap->x() + xChange[dir];
-                    int checkY = trap->y() + yChange[dir];
-                    Tile* checkTile = getTile(checkX, checkY);
-                    Trap* checkTrap = getTrap(checkX, checkY);
-                    //if the tile is empty, and there isn't a sarcophagus there
-                    if(checkTrap == NULL || checkTrap->trapType() != TrapType::SARCOPHAGUS)
+                    else if (trap.TrapType == TrapType.MUMMY)
                     {
-                    if(checkTile != NULL && checkTile->type() == Tile::EMPTY)
-                    {
-                        //move on that tile
-                        trap->act(checkX, checkY);
-                    }
+                        // Move around randomly if a mummy
+                        int dir = rand.Next(4);
+                        int checkX = trap.X + xChange[dir];
+                        int checkY = trap.Y + yChange[dir];
+                        Tile checkTile = getTile(checkX, checkY);
+                        Trap checkTrap = getTrap(checkX, checkY);
+                        // If the tile is empty, and there isn't a sarcophagus there
+                        if (checkTrap == null || checkTrap.TrapType != TrapType.SARCOPHAGUS)
+                        {
+                            if (checkTile != null && checkTile.Type == Tile.EMPTY)
+                            {
+                                //move on that tile
+                                trap.act(checkX, checkY);
+                            }
+                        }
                     }
                 }
             }
@@ -284,6 +286,8 @@ class AI : BaseAI
     /// </summary>
     public override void init()
     {
+        // Initialize random number generator
+        rand = new Random();
         // Find out which player I am
         me = players[playerID()];
     }

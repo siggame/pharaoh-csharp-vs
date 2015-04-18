@@ -42,9 +42,9 @@ struct Connection
   int roundNumber;
   int scarabsForTraps;
   int scarabsForThieves;
-  int maxStack;
   int roundsToWin;
   int roundTurnLimit;
+  int numberOfSarcophagi;
 
   _Player* Players;
   int PlayerCount;
@@ -94,8 +94,8 @@ extern "C"
   DLLEXPORT int thiefThiefTalk(_Thief* object, char* message);
   ///Commands a thief to move to a new location.
   DLLEXPORT int thiefMove(_Thief* object, int x, int y);
-  ///Commands a thief to act on a location.
-  DLLEXPORT int thiefAct(_Thief* object, int x, int y);
+  ///Commands a thief to use a special on a location.
+  DLLEXPORT int thiefUseSpecial(_Thief* object, int x, int y);
 
 //derived properties
 
@@ -114,9 +114,9 @@ DLLEXPORT int getGameNumber(Connection* c);
 DLLEXPORT int getRoundNumber(Connection* c);
 DLLEXPORT int getScarabsForTraps(Connection* c);
 DLLEXPORT int getScarabsForThieves(Connection* c);
-DLLEXPORT int getMaxStack(Connection* c);
 DLLEXPORT int getRoundsToWin(Connection* c);
 DLLEXPORT int getRoundTurnLimit(Connection* c);
+DLLEXPORT int getNumberOfSarcophagi(Connection* c);
 
 DLLEXPORT _Player* getPlayer(Connection* c, int num);
 DLLEXPORT int getPlayerCount(Connection* c);
